@@ -26,15 +26,15 @@ TcpServerSocket::TcpServerSocket(uint16_t local_port) :
     });
 
     int reuse = 1;
-    CHECK_THROW_ERRNO(setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) == 0, "setsockopt() failed");
+    CHECK_THROW_POSIX(setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) == 0, "setsockopt() failed");
 
     struct sockaddr_in addr{};
     addr.sin_family = AF_INET;
     addr.sin_port = htons(local_port);
     addr.sin_addr.s_addr = INADDR_ANY;
-    CHECK_THROW_ERRNO(bind(_sockfd, (struct sockaddr*)&addr, sizeof(struct sockaddr_in)) != -1, "bind() failed!");
+    CHECK_THROW_POSIX(bind(_sockfd, (struct sockaddr*)&addr, sizeof(struct sockaddr_in)) != -1, "bind() failed!");
 
-    CHECK_THROW_ERRNO(listen(_sockfd, 1) != -1, "listen() failed!");
+    CHECK_THROW_POSIX(listen(_sockfd, 1) != -1, "listen() failed!");
 }
 
 TcpServerSocket::~TcpServerSocket()
@@ -48,7 +48,7 @@ TcpServerSocket::~TcpServerSocket()
 int TcpServerSocket::create_socket()
 {
     int sock = socket(AF_INET, SOCK_STREAM, 0);
-    CHECK_THROW_ERRNO(sock >= 0, "socket() failed");
+    CHECK_THROW_POSIX(sock >= 0, "socket() failed");
     return sock;
 }
 
@@ -57,7 +57,7 @@ TcpSocketPtr TcpServerSocket::accept_connection()
     struct sockaddr_in client;
     socklen_t client_len = sizeof(client);
     int client_fd = accept(_sockfd, (struct sockaddr*)&client, &client_len);
-    CHECK_THROW_ERRNO(client_fd > 0, "accept() failed!");
+    CHECK_THROW_POSIX(client_fd > 0, "accept() failed!");
     return std::shared_ptr<TcpSocket>(new TcpSocket(client_fd));
 }
 
@@ -68,7 +68,7 @@ TcpSocketPtr TcpServerSocket::accept_connection(uint32_t timeout_ms)
     if(!Utils::wait_for_read_fd(_sockfd, timeout_ms))
     	return nullptr;
     int client_fd = accept(_sockfd, (struct sockaddr*)&client, &client_len);
-    CHECK_THROW_ERRNO(client_fd > 0, "accept() failed!");
+    CHECK_THROW_POSIX(client_fd > 0, "accept() failed!");
     return std::shared_ptr<TcpSocket>(new TcpSocket(client_fd));
 }
 

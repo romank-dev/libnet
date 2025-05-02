@@ -24,12 +24,12 @@ using namespace std;
 TcpSocket::TcpSocket(uint16_t local_port) :
         Socket(Type::TCP, local_port)
 {
-    CHECK_THROW_ERRNO(listen(_sockfd, 1) != -1, "listen() failed!");
+    CHECK_THROW_POSIX(listen(_sockfd, 1) != -1, "listen() failed!");
 
     struct sockaddr_in client_addr{};
     socklen_t client_addr_len = sizeof(client_addr);
     int client_sock_fd;
-    CHECK_THROW_ERRNO((client_sock_fd = accept(_sockfd, (struct sockaddr*)&client_addr, &client_addr_len)) != -1, "accept() failed!");
+    CHECK_THROW_POSIX((client_sock_fd = accept(_sockfd, (struct sockaddr*)&client_addr, &client_addr_len)) != -1, "accept() failed!");
 
     close(_sockfd);
     _sockfd = client_sock_fd;
@@ -38,7 +38,7 @@ TcpSocket::TcpSocket(uint16_t local_port) :
 TcpSocket::TcpSocket(const sockaddr_in& target) :
     Socket(Type::TCP)
 {
-    CHECK_THROW_ERRNO(connect(_sockfd, (struct sockaddr*)&target, sizeof(target)) != -1, "connect() failed!");
+    CHECK_THROW_POSIX(connect(_sockfd, (struct sockaddr*)&target, sizeof(target)) != -1, "connect() failed!");
 }
 
 TcpSocket::TcpSocket(const string& ip, uint16_t port) :
@@ -53,7 +53,7 @@ TcpSocket::~TcpSocket()
 {
     SAFE_DESTRUCTOR
     (
-        CHECK_THROW_ERRNO(!shutdown(_sockfd, SHUT_RDWR), "shutdown() failed");
+        CHECK_THROW_POSIX(!shutdown(_sockfd, SHUT_RDWR), "shutdown() failed");
     )
 }
 
@@ -65,7 +65,7 @@ void TcpSocket::send(const void* data, uint32_t size)
             (total_sent += sent) < size)
     {}
 
-    CHECK_THROW_ERRNO(total_sent == size, "send() failed");
+    CHECK_THROW_POSIX(total_sent == size, "send() failed");
 }
 
 void TcpSocket::receive(void* data, uint32_t size)
@@ -76,14 +76,14 @@ void TcpSocket::receive(void* data, uint32_t size)
     while((read = ::read(_sockfd, (char*)data+total_read, size-total_read)) > 0 && (total_read += read) < size)
     {}
 
-    CHECK_THROW_ERRNO(total_read == size, "recv() failed");
+    CHECK_THROW_POSIX(total_read == size, "recv() failed");
 }
 
 bool TcpSocket::receive(void* data, uint32_t size, uint32_t timeout_ms)
 {
     uint32_t current_timeout;
     socklen_t current_timeout_len = sizeof(current_timeout);
-    CHECK_THROW_ERRNO(getsockopt(_sockfd, SOL_SOCKET, SO_RCVTIMEO, &current_timeout, &current_timeout_len) == 0, "getsockopt() failed");
+    CHECK_THROW_POSIX(getsockopt(_sockfd, SOL_SOCKET, SO_RCVTIMEO, &current_timeout, &current_timeout_len) == 0, "getsockopt() failed");
 
     ScopeGuard restore_original_timeout([&]()
     {
@@ -96,7 +96,7 @@ bool TcpSocket::receive(void* data, uint32_t size, uint32_t timeout_ms)
     while((read = ::read(_sockfd, (char*)data+total_read, size-total_read)) > 0 && (total_read += read) < size)
     {}
 
-    CHECK_THROW_ERRNO(total_read == size || (errno == EAGAIN || errno == EWOULDBLOCK), "recv() failed");
+    CHECK_THROW_POSIX(total_read == size || (errno == EAGAIN || errno == EWOULDBLOCK), "recv() failed");
     return total_read == size;
 }
 
