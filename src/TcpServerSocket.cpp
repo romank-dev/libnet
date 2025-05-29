@@ -65,7 +65,7 @@ TcpSocketPtr TcpServerSocket::accept_connection(uint32_t timeout_ms)
 {
     struct sockaddr_in client;
     socklen_t client_len = sizeof(client);
-    if(!Utils::wait_for_read_fd(_sockfd, timeout_ms))
+    if(!Utils::OS::wait_for_read_fd(_sockfd, timeout_ms))
     	return nullptr;
     int client_fd = accept(_sockfd, (struct sockaddr*)&client, &client_len);
     CHECK_THROW_POSIX(client_fd > 0, "accept() failed!");
