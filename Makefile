@@ -28,7 +28,7 @@ DEP_DETECTOR = $(OBJ_DETECTOR:%.o=%.d)
 INCLUDE_DIRS = -Iinclude -I$(G_SRC)/libcommon/include 
 LIBRARY_DIRS = -L$(G_BIN)
 CXXFLAGS = -MMD -fPIC $(INCLUDE_DIRS)  
-LDFLAGS = -lcommon $(LIBRARY_DIRS)
+LDFLAGS = $(LIBRARY_DIRS) -lcommon 
 
 .PHONY: all 
 all: $(G_BIN)/libnet.so $(G_BIN)/$(PROJECT)/detector
@@ -40,7 +40,7 @@ $(G_BIN)/libnet.so: $(OBJ_LIB)
 	
 $(G_BIN)/$(PROJECT)/detector: $(G_BIN)/libnet.so $(OBJ_DETECTOR)
 	@echo "\033[0;32m [LINK] $@ \033[0;0m"
-	g++ -o $@ $^ $(LDFLAGS) $(G_LDFLAGS) -lnet
+	g++ -o $@ $^ -lnet $(LDFLAGS) 
 	
 
 -include $(DEP_LIB)
