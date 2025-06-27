@@ -13,28 +13,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-#pragma once
+#include "gtest/gtest.h"
 
-#include <cstdint>
-#include <vector>
-#include <mutex>
-#include <memory>
-#include <netinet/in.h>
-#include <libcommon/libcommon.hpp>
-
-class TcpSocket;
-
-class TcpServerSocket final : NonCopyable
+int main(int argc, char** argv)
 {
-	public:
-		explicit TcpServerSocket(uint16_t local_port);
-		~TcpServerSocket();
+    testing::InitGoogleTest(&argc, argv);
 
-		std::shared_ptr<TcpSocket> accept_connection();
-		std::shared_ptr<TcpSocket> accept_connection(uint32_t timeout_ms);
-
-
-	private:
-		Handle 				_sockfd;
-};
-
+    return RUN_ALL_TESTS();
+}

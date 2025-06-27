@@ -13,12 +13,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+#include <libnet/TcpSocket.hpp>
 #include <libnet/TcpServerSocket.hpp>
 
-#include <libnet/TcpSocket.hpp>
-
 TcpServerSocket::TcpServerSocket(uint16_t local_port) :
-    _sockfd(create_socket())
+    _sockfd(socket(AF_INET, SOCK_STREAM, 0), "Failed to create server socket")
 {
     ExceptionGuard socket_free_guard([this]()
     {
@@ -45,23 +44,16 @@ TcpServerSocket::~TcpServerSocket()
     )
 }
 
-int TcpServerSocket::create_socket()
-{
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    CHECK_THROW_POSIX(sock >= 0, "socket() failed");
-    return sock;
-}
-
-TcpSocketPtr TcpServerSocket::accept_connection()
+TcpSocket::sptr TcpServerSocket::accept_connection()
 {
     struct sockaddr_in client;
     socklen_t client_len = sizeof(client);
     int client_fd = accept(_sockfd, (struct sockaddr*)&client, &client_len);
     CHECK_THROW_POSIX(client_fd > 0, "accept() failed!");
-    return std::shared_ptr<TcpSocket>(new TcpSocket(client_fd));
+    return std::shared_ptr<TcpSocket>(new TcpSocket(Handle(client_fd)));
 }
 
-TcpSocketPtr TcpServerSocket::accept_connection(uint32_t timeout_ms)
+TcpSocket::sptr TcpServerSocket::accept_connection(uint32_t timeout_ms)
 {
     struct sockaddr_in client;
     socklen_t client_len = sizeof(client);

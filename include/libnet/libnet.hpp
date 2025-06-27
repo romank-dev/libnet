@@ -15,9 +15,9 @@ limitations under the License.
 
 #pragma once
 
-#include <libnet/Socket.hpp>
 #include <libnet/TcpServerSocket.hpp>
-#include <libnet/TcpSocket.hpp>
 #include <libnet/UdpSocket.hpp>
+#include <libnet/IpSocket.hpp>
+#include <libnet/TcpSocket.hpp>
 
 

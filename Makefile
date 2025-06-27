@@ -15,15 +15,19 @@
 
 PROJECT = $(shell basename $(CURDIR))
 SRC_DIR = src
+TEST_DIR = test
 
-SRC_LIB = src/UdpSocket.cpp src/TcpSocket.cpp src/Socket.cpp src/TcpServerSocket.cpp src/Detector.cpp
-SRC_DETECTOR = src/detector.cpp
+SRC_LIB = src/Detector.cpp src/UdpSocket.cpp src/TcpSocket.cpp src/IpSocket.cpp src/Socket.cpp src/TcpServerSocket.cpp src/IpAddress.cpp src/IpSocketAddress.cpp 
+SRC_DETECTOR = src/detector.cpp 
+SRC_TEST = $(wildcard test/*.cpp)
 
 OBJ_LIB = $(SRC_LIB:$(SRC_DIR)/%.cpp=$(G_OBJ)/$(PROJECT)/%.o)
 OBJ_DETECTOR = $(SRC_DETECTOR:$(SRC_DIR)/%.cpp=$(G_OBJ)/$(PROJECT)/%.o)
+OBJ_TEST = $(SRC_TEST:$(TEST_DIR)/%.cpp=$(G_OBJ)/$(PROJECT)/%.o)
 
 DEP_LIB = $(OBJ_LIB:%.o=%.d)
 DEP_DETECTOR = $(OBJ_DETECTOR:%.o=%.d)
+DEP_TEST = $(OBJ_TEST:%.o=%.d)
 
 INCLUDE_DIRS = -Iinclude -I$(G_SRC)/libcommon/include 
 LIBRARY_DIRS = -L$(G_BIN)
@@ -31,24 +35,32 @@ CXXFLAGS = -MMD -fPIC $(INCLUDE_DIRS)
 LDFLAGS = $(LIBRARY_DIRS) -lcommon 
 
 .PHONY: all 
-all: $(G_BIN)/libnet.so $(G_BIN)/$(PROJECT)/detector
+all: $(G_BIN)/libnet.so $(G_BIN)/$(PROJECT)/detector $(G_BIN)/$(PROJECT)/test_libnet  
 	@echo "\033[0;97m [DONE] $(PROJECT)"
 
 $(G_BIN)/libnet.so: $(OBJ_LIB)
 	@echo "\033[0;32m [LINK] $@ \033[0;0m"
-	g++ -shared -o $@ $^ $(LDFLAGS) 
+	@g++ -shared -o $@ $^ $(LDFLAGS) 
 	
 $(G_BIN)/$(PROJECT)/detector: $(G_BIN)/libnet.so $(OBJ_DETECTOR)
 	@echo "\033[0;32m [LINK] $@ \033[0;0m"
-	g++ -o $@ $^ -lnet $(LDFLAGS) 
+	@g++ -o $@ $^ -lnet $(LDFLAGS) 
 	
-
+$(G_BIN)/$(PROJECT)/test_libnet: $(OBJ_TEST) $(G_BIN)/libnet.so
+	@echo "\033[0;32m [LINK] $@ \033[0;0m"
+	@g++ -o $@ $^ $(LDFLAGS) -lcommon -lgtest -lpthread
+	
 -include $(DEP_LIB)
 -include $(DEP_DETECTOR)
+-include $(DEP_TEST)
 
 $(G_OBJ)/$(PROJECT)/%.o: $(SRC_DIR)/%.cpp
 	@echo "\033[0;93m [CC] $@ \033[0;0m"
-	g++ -c $< -o $@ $(CXXFLAGS) $(G_CXXFLAGS)
+	@g++ -c $< -o $@ $(CXXFLAGS) $(G_CXXFLAGS) -std=c++11
+
+$(G_OBJ)/$(PROJECT)/%.o: $(TEST_DIR)/%.cpp
+	@echo "\033[0;93m [CC] $@ \033[0;0m"
+	@g++ -c $< -o $@ $(CXXFLAGS) $(G_CXXFLAGS) -std=c++14
 
 $(shell mkdir -p $(G_BIN)/$(PROJECT))
 $(shell mkdir -p $(G_OBJ)/$(PROJECT))

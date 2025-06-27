@@ -20,12 +20,14 @@ limitations under the License.
 #include <mutex>
 #include <memory>
 #include <netinet/in.h>
-#include <libnet/Socket.hpp>
 
-class UdpSocket final : public Socket
+#include <libnet/IpSocket.hpp>
+#include <libnet/IpSocketAddress.hpp>
+
+class UdpSocket final : public IpSocket
 {
 	public:
-		explicit UdpSocket(uint16_t local_port, bool reuse_addr=false);
+		UdpSocket(IpSocketAddress local_address, bool reuse_addr=false);
 		UdpSocket();
 
 		void send(void* data, uint32_t size, sockaddr_in target);

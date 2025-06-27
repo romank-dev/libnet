@@ -15,45 +15,42 @@ limitations under the License.
 
 #pragma once
 
-#include <cstdint>
-#include <vector>
-#include <mutex>
-#include <memory>
-#include <netinet/in.h>
+
 #include <libcommon/libcommon.hpp>
 
 class Socket : NonCopyable
 {
     public:
-        enum class Type
+
+        using sptr = std::shared_ptr<Socket>;
+        using uptr = std::unique_ptr<Socket>;
+
+        enum class SockType
         {
-            TCP,
-            UDP
+            IPv4,
+            UNIX
         };
 
-
     public:
-		virtual ~Socket();
+        virtual ~Socket();
 
-		void set_send_timeout(int ms);
-		void set_receive_timeout(int ms);
+        SockType type() const;
 
-		void bind_to_address(const sockaddr_in& addr);
-		void bind_to_port(uint16_t port);
-		void bind_to_device(const std::string& iface_name);
+        void set_send_timeout(uint32_t ms);
+        void set_receive_timeout(uint32_t ms);
 
-		void set_sock_opt(int level, int optname, void* optval, socklen_t optlen);
-		int get_sock_opt(int level, int optname, void* optval, socklen_t* optlen);
+        void set_sock_opt(int level, int optname, void* optval, socklen_t optlen);
+        void get_sock_opt(int level, int optname, void* optval, socklen_t* optlen);
 
-		static struct sockaddr_in addr_from_string(const std::string& ip, uint16_t port);
 
     protected:
-		explicit Socket(Type sock_type);
-        Socket(Type sock_type, uint16_t local_port, bool reuse_addr=false); // socket() + bind()
-        explicit Socket(int sockfd); // take over existing socket
+        explicit Socket(SockType type, Handle&& sockfd);
 
-	protected:
-		int 				_sockfd;
+    protected:
+        Handle              _sockfd;
+        const SockType      _type;
 };
 
-typedef std::shared_ptr<Socket> SocketPtr;
+
+
+

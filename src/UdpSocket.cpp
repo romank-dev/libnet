@@ -21,12 +21,12 @@ limitations under the License.
 
 using namespace std;
 
-UdpSocket::UdpSocket(uint16_t port, bool reuse_addr) :
-	Socket(Type::UDP, port, reuse_addr)
+UdpSocket::UdpSocket(IpSocketAddress local_address, bool reuse_addr) :
+	IpSocket(Protocol::UDP, local_address, reuse_addr)
 {}
 
 UdpSocket::UdpSocket() :
-	Socket(Type::UDP)
+	IpSocket(Protocol::UDP)
 {}
 
 void UdpSocket::send(void* data, uint32_t size, sockaddr_in target)
