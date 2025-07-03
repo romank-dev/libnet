@@ -55,7 +55,7 @@ TcpSocket::TcpSocket(IpSocketAddress address, uint32_t timeout) :
 
     int so_error = 0;
     socklen_t len = sizeof(so_error);
-    get_sock_opt(SOL_SOCKET, SO_ERROR, &so_error, &len);
+    get_sock_opt(SOL_SOCKET, SO_ERROR, &so_error, len);
     errno = so_error;
     CHECK_THROW_POSIX(errno == 0, "Connection to %s failed", string(address).c_str());
 }
@@ -123,6 +123,14 @@ void TcpSocket::receive(void* data, size_t size)
     CHECK_THROW_POSIX(num_recvd == size, "timeout while receiving data");
 }
 
+bool TcpSocket::wait_for_close(uint32_t timeout_ms)
+{
+    char a_byte;
+    Utils::OS::wait_for_read_fd(_sockfd, timeout_ms);
+    int num_read = recv(_sockfd, &a_byte, 1, MSG_PEEK);
+    CHECK_THROW_POSIX(num_read != -1 || errno == EAGAIN, "recv() failed");
+    return num_read == 0;
+}
 
 
 

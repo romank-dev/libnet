@@ -31,7 +31,7 @@ IpSocket::IpSocket(Protocol sock_type, Handle&& sock_fd) :
     Socket(SockType::IPv4, move(sock_fd)),
     _protocol(sock_type)
 {
-    CHECK_THROW_POSIX(sock_fd != -1, "Invalid socket!");
+    CHECK_THROW_POSIX(_sockfd != -1, "Invalid socket!");
 }
 
 IpSocket::IpSocket(Protocol protocol, IpSocketAddress local_address, bool reuse_addr) :

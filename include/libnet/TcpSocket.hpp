@@ -90,7 +90,7 @@ class TcpSocket final : public IpSocket
          * @param size Size of the buffer.
          * @param num_recvd Reference to store the number of bytes successfully received.
          * @return True if the full size was received, false if timed out. Throws on error.
-         * @Note This method blocks until the data is received or an timeout/error occurs.
+         * @Note This method blocks until some data is received or an timeout/error occurs.
          */
 		bool receive(void* data, size_t size, size_t& num_recvd);
 
@@ -98,14 +98,21 @@ class TcpSocket final : public IpSocket
          * @brief Receives data from the socket.
          * @param data Pointer to the buffer to store received data.
          * @param size Size of the buffer.
-         * @Note This method blocks until the data is received or an error/timeout occurs.
+         * @Note This method blocks until all \ref size bytes are received or an error/timeout occurs.
          * @throws PosixException on timeout and other errors.
          */
 		void receive(void* data, size_t size);
 
+		/**
+         * @brief Waits for the other end to close the connection.
+         * @param timeout_ms Timeout in milliseconds to wait.
+         * @return True if the connection was closed by the other end, false if timed out or data is available.
+         */
+		bool wait_for_close(uint32_t timeout_ms);
+
 	private:
-		friend sptr TcpServerSocket::accept_connection();
-		friend sptr TcpServerSocket::accept_connection(uint32_t);
+		friend uptr TcpServerSocket::accept_connection();
+		friend uptr TcpServerSocket::accept_connection(uint32_t);
 
 		explicit TcpSocket(Handle&& sockfd); // take over existing sock fd given by TcpServerSocket::accept_connection()
 

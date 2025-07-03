@@ -24,17 +24,53 @@ limitations under the License.
 #include <libnet/IpSocket.hpp>
 #include <libnet/IpSocketAddress.hpp>
 
+/**
+ * @class UdpSocket
+ * @brief A class for handling UDP socket communication.
+ *
+ * The `UdpSocket` class provides functionality for sending and receiving UDP packets.
+ * It is derived from the `IpSocket` class and offers additional methods specific to UDP communication.
+ */
 class UdpSocket final : public IpSocket
 {
 	public:
+
+        using sptr = std::shared_ptr<UdpSocket>;
+        using uptr = std::unique_ptr<UdpSocket>;
+
+        /**
+         * @brief Constructs a `UdpSocket` and binds it to a specific local address.
+         *
+         * @param local_address The local address to bind the socket to.
+         * @param reuse_addr Whether to allow address reuse (default is `false`).
+         */
 		UdpSocket(IpSocketAddress local_address, bool reuse_addr=false);
+
+		 /**
+         * @brief Default constructor for `UdpSocket`.
+         *
+         * Creates an unbound UDP socket.
+         */
 		UdpSocket();
 
-		void send(void* data, uint32_t size, sockaddr_in target);
+		/**
+         * @brief Sends data to a specified target address.
+         *
+         * @param data Pointer to the data to be sent.
+         * @param size Size of the data in bytes.
+         * @param target The target address to send the data to.
+         */
+		void send(const void* data, size_t size, IpSocketAddress target);
 
-		// returns true if received packet, false if timed out.
-		bool receive(void* data, uint32_t size, uint16_t& packet_size, sockaddr_in& from);
+		/**
+         * @brief Receives data from the socket.
+         *
+         * @param data Pointer to the buffer where received data will be stored.
+         * @param size Size of the buffer in bytes.
+         * @param packet_size Reference to store the size of the received packet.
+         * @param from Reference to store the address of the sender.
+         * @return `true` if a packet was received, `false` if the operation timed out.
+         */
+		bool receive(void* data, size_t size, uint16_t& packet_size, IpSocketAddress& from);
 
 };
-
-typedef std::shared_ptr<UdpSocket> UdpSocketPtr;

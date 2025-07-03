@@ -32,5 +32,5 @@ class Detector : NonCopyable
         std::vector<std::pair<std::string, std::string>> collect_scan(uint32_t timeout_ms=1);
 
     private:
-        UdpSocketPtr       _sock;
+        UdpSocket::uptr       _sock;
 };

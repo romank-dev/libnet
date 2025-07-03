@@ -21,20 +21,42 @@ limitations under the License.
 #include <memory>
 #include <netinet/in.h>
 #include <libcommon/libcommon.hpp>
+#include <libnet/IpSocketAddress.hpp>
+#include <libnet/IpSocket.hpp>
 
 class TcpSocket;
 
-class TcpServerSocket final : NonCopyable
+/**
+ * @class TcpServerSocket
+ * @brief A TCP server socket implementation for accepting incoming connections.
+ *
+ * The TcpServerSocket class provides functionality for creating and managing a TCP server socket.
+ * It allows accepting incoming connections and supports optional timeout functionality.
+ */
+class TcpServerSocket final : public IpSocket
 {
 	public:
-		explicit TcpServerSocket(uint16_t local_port);
-		~TcpServerSocket();
+        /**
+         * @brief Constructs a `TcpServerSocket` bound to the specified address and port.
+         * @param bind_address The address and port on which the server will bind.
+         * @param reuse_addr Whether to reuse the address if it is managed by the OS (SO_REUSEADDR flag).
+         */
+		TcpServerSocket(IpSocketAddress bind_address, bool reuse_addr);
 
-		std::shared_ptr<TcpSocket> accept_connection();
-		std::shared_ptr<TcpSocket> accept_connection(uint32_t timeout_ms);
+		 /**
+         * @brief Accepts an incoming connection.
+         * @return A unique pointer to a `TcpSocket` object representing the accepted connection.
+         * @throws PosixException on errors during the accept operation.
+         */
+		std::unique_ptr<TcpSocket> accept_connection();
 
+		/**
+         * @brief Accepts an incoming connection with a specified timeout.
+         * @param timeout_ms Timeout in milliseconds to wait for a connection.
+         * @return A unique pointer to a `TcpSocket` object representing the accepted connection, or null if timed out.
+         * @throws PosixException on errors during the accept operation or timeout.
+         */
+		std::unique_ptr<TcpSocket> accept_connection(uint32_t timeout_ms);
 
-	private:
-		Handle 				_sockfd;
 };
 

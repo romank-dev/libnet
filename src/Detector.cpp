@@ -24,7 +24,7 @@ using namespace std;
 void Detector::broadcast(const string& id)
 {
     if(_sock.get() == nullptr)
-        _sock = make_shared<UdpSocket>();
+        _sock = UdpSocket::uptr(new UdpSocket());
     _sock->bind_to_port(DETECTOR_PORT);
 
     Buffer send_buf(id.c_str(), id.c_str() + id.length());
@@ -33,7 +33,7 @@ void Detector::broadcast(const string& id)
     while(true)
     {
         uint16_t packet_size;
-        struct sockaddr_in from{};
+        IpSocketAddress from;
         _sock->receive(data.data(), data.size(), packet_size, from);
 
         //TRACE(LEVEL_INF,4054567065,1,0x6,"Detector responding to client at %s...",inet_ntoa(from.sin_addr));
@@ -61,12 +61,12 @@ vector<pair<string, string>> Detector::collect_scan(uint32_t timeout_ms)
         _sock->set_receive_timeout(10);
         Buffer ret_buf(16, 0);
         uint16_t packet_size;
-        struct sockaddr_in from{};
+        IpSocketAddress from;
 
         if(_sock->receive(ret_buf.data(), ret_buf.size(), packet_size, from))
         {
             //TRACE(LEVEL_INF,1500758640,2,0x66,"Address %s responds with ID: %s",inet_ntoa(from.sin_addr),ret_buf.data());
-            ans.push_back({ string((const char*)ret_buf.data(), min(packet_size, (uint16_t)ret_buf.size())), string(inet_ntoa(from.sin_addr))});
+            ans.push_back({ string((const char*)ret_buf.data(), min(packet_size, (uint16_t)ret_buf.size())), (string)from.address()});
         }
     }
 
@@ -77,7 +77,7 @@ vector<pair<string, string>> Detector::collect_scan(uint32_t timeout_ms)
 void Detector::scan()
 {
     if(_sock.get() == nullptr)
-        _sock = make_shared<UdpSocket>();
+        _sock = unique_ptr<UdpSocket>(new UdpSocket());
 
     struct sockaddr_in addr {};
     addr.sin_family = AF_INET;

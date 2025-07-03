@@ -25,12 +25,6 @@ using namespace std;
 Socket::Socket(SockType type, Handle&& sockfd) : _sockfd(move(sockfd)), _type(type)
 {}
 
-Socket::~Socket()
-{
-    if(_sockfd != -1)
-        close(_sockfd);
-}
-
 Socket::SockType Socket::type() const
 {
     return _type;
@@ -41,9 +35,9 @@ void Socket::set_sock_opt(int level, int optname, void* optval, socklen_t optlen
     CHECK_THROW_POSIX(!setsockopt(_sockfd, level, optname, optval, optlen), "setsockopt failed!");
 }
 
-void Socket::get_sock_opt(int level, int optname, void* optval, socklen_t* optlen)
+void Socket::get_sock_opt(int level, int optname, void* optval, socklen_t& optlen)
 {
-    CHECK_THROW_POSIX(!getsockopt(_sockfd, level, optname, optval, optlen), "getsockopt() failed");
+    CHECK_THROW_POSIX(!getsockopt(_sockfd, level, optname, optval, &optlen), "getsockopt() failed");
 }
 
 void Socket::set_receive_timeout(uint32_t ms)

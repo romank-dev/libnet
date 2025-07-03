@@ -23,6 +23,9 @@ IpSocketAddress::IpSocketAddress(IpAddress address, uint16_t port) : _addr(make_
 IpSocketAddress::IpSocketAddress(sockaddr_in addr) : _addr(addr)
 {}
 
+IpSocketAddress::IpSocketAddress() : _addr({})
+{}
+
 sockaddr_in IpSocketAddress::make_addr(IpAddress address, uint16_t port)
 {
     sockaddr_in addr {};
@@ -52,6 +55,10 @@ IpSocketAddress::operator const sockaddr_in&() const
     return _addr;
 }
 
+IpSocketAddress::operator sockaddr_in&()
+{
+    return _addr;
+}
 
 
 

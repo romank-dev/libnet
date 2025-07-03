@@ -19,5 +19,7 @@ limitations under the License.
 #include <libnet/UdpSocket.hpp>
 #include <libnet/IpSocket.hpp>
 #include <libnet/TcpSocket.hpp>
+#include <libnet/IpAddress.hpp>
+#include <libnet/IpSocketAddress.hpp>
 
 

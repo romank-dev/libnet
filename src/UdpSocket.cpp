@@ -29,16 +29,16 @@ UdpSocket::UdpSocket() :
 	IpSocket(Protocol::UDP)
 {}
 
-void UdpSocket::send(void* data, uint32_t size, sockaddr_in target)
+void UdpSocket::send(const void* data, size_t size, IpSocketAddress target)
 {
 	CHECK_THROW(size <= 65507, "send(): UDP packet size too large");
     CHECK_THROW_POSIX(-1 != sendto(_sockfd, data, size, 0, (sockaddr*)(&target), sizeof(target)),"UdpSocket::send(): send failed");
 }
 
-bool UdpSocket::receive(void* data, uint32_t size, uint16_t& packet_size, sockaddr_in& from)
+bool UdpSocket::receive(void* data, size_t size, uint16_t& packet_size, IpSocketAddress& from)
 {
 	socklen_t addrlen = sizeof(struct sockaddr_in);
-	int res = recvfrom(_sockfd, data, size, 0, (sockaddr*)(&from), &addrlen);
+	int res = recvfrom(_sockfd, data, size, 0, (sockaddr*)(&from.operator sockaddr_in &()), &addrlen);
 	CHECK_THROW_POSIX(res >= 0 || errno == EAGAIN || errno == EWOULDBLOCK, "recvfrom() failed");
 	packet_size = (uint16_t)res;
 	return res >= 0;

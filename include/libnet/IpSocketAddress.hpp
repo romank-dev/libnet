@@ -39,6 +39,11 @@ class IpSocketAddress final
          */
         IpSocketAddress(sockaddr_in addr);
 
+        /** @brief Default constructor for `IpSocketAddress`.
+         *         Will be initialized to 0.0.0.0:0
+         */
+        IpSocketAddress();
+
         /**
          * @brief Retrieves the IPv4 address.
          *
@@ -67,9 +72,16 @@ class IpSocketAddress final
          */
         operator const sockaddr_in&() const;
 
+        /**
+         * @brief Converts the `IpSocketAddress` object to a sockaddr_in structure.
+         *
+         * @return A sockaddr_in structure that holds the address and port.
+         */
+        operator sockaddr_in&();
+
     private:
         sockaddr_in make_addr(IpAddress address, uint16_t port);
 
     private:
-        const sockaddr_in     _addr;
+        sockaddr_in         _addr;
 };
