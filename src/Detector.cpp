@@ -18,6 +18,7 @@ limitations under the License.
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <net/if.h>
+#include "logging.hpp"
 
 using namespace std;
 
@@ -36,14 +37,14 @@ void Detector::broadcast(const string& id)
         IpSocketAddress from;
         _sock->receive(data.data(), data.size(), packet_size, from);
 
-        //TRACE(LEVEL_INF,4054567065,1,0x6,"Detector responding to client at %s...",inet_ntoa(from.sin_addr));
+        TRACE_INF("Detector responding to client at %s...", inet_ntoa(from.address()));
         try
         {
             _sock->send(send_buf.data(), send_buf.size(), from);
         }
         catch(const std::exception& e)
         {
-            //TRACE(LEVEL_ERR,3890196615,1,0x6,"Detector failed to send packet: %s",e.what());
+            TRACE_ERR("Detector failed to send packet: %s",e.what());
         }
     }
 }
@@ -59,14 +60,14 @@ vector<pair<string, string>> Detector::collect_scan(uint32_t timeout_ms)
     while(t.get_ms() < timeout_ms)
     {
         _sock->set_receive_timeout(10);
-        Buffer ret_buf(16, 0);
+        char ret_buf[16]{};
         uint16_t packet_size;
         IpSocketAddress from;
 
-        if(_sock->receive(ret_buf.data(), ret_buf.size(), packet_size, from))
+        if(_sock->receive(ret_buf, sizeof(ret_buf), packet_size, from))
         {
-            //TRACE(LEVEL_INF,1500758640,2,0x66,"Address %s responds with ID: %s",inet_ntoa(from.sin_addr),ret_buf.data());
-            ans.push_back({ string((const char*)ret_buf.data(), min(packet_size, (uint16_t)ret_buf.size())), (string)from.address()});
+            TRACE_INF("Address %s responds with ID: %s", inet_ntoa(from.address()), ret_buf);
+            ans.push_back({ ret_buf, (string)from.address()});
         }
     }
 
@@ -103,7 +104,7 @@ vector<pair<string, string>> Detector::scan_and_collect(uint32_t timeout_ms)
 {
     scan();
 
-    //TRACE(LEVEL_INF,891468780,0,0,"Detector scan packet sent! waiting for response...");
+    TRACE_INF("Detector scan packet sent! waiting for response...");
 
     return collect_scan(timeout_ms);
 }

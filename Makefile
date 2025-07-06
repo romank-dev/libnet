@@ -29,7 +29,7 @@ DEP_LIB = $(OBJ_LIB:%.o=%.d)
 DEP_DETECTOR = $(OBJ_DETECTOR:%.o=%.d)
 DEP_TEST = $(OBJ_TEST:%.o=%.d)
 
-INCLUDE_DIRS = -Iinclude -I$(G_SRC)/libcommon/include 
+INCLUDE_DIRS = -Iinclude -I$(G_SRC)/libcommon/include -I$(G_SRC)/liblogtrace/include 
 LIBRARY_DIRS = -L$(G_BIN)
 CXXFLAGS = -MMD -fPIC $(INCLUDE_DIRS)  
 LDFLAGS = $(LIBRARY_DIRS) -lcommon 

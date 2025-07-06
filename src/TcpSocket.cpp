@@ -86,6 +86,12 @@ bool TcpSocket::send(const void* data, size_t size, size_t& num_sent)
 
 bool TcpSocket::receive(void* data, size_t size, size_t& num_recvd)
 {
+    if(size == 0)
+    {
+        num_recvd = 0;
+        return true;
+    }
+
     ssize_t read;
     num_recvd = 0;
     while((read = ::read(_sockfd, (char*)data+num_recvd, size-num_recvd)) > 0 &&
@@ -106,19 +112,22 @@ void TcpSocket::send(const void* data, size_t size)
             (num_sent += sent) < size)
     {}
 
-    CHECK_THROW_POSIX(sent > 0, "send() failed");
+    CHECK_THROW_POSIX(sent != -1, "send() failed");
     CHECK_THROW_POSIX(num_sent == size, "timeout while sending data");
 }
 
 void TcpSocket::receive(void* data, size_t size)
 {
+    if(size == 0)
+        return;
+
     ssize_t read;
     size_t num_recvd = 0;
     while((read = ::read(_sockfd, (char*)data+num_recvd, size-num_recvd)) > 0 &&
             (num_recvd += read) < size)
     {}
 
-    CHECK_THROW_POSIX(read >= 0, "recv() failed");
+    CHECK_THROW_POSIX(read >= 0 || errno == EAGAIN, "recv() failed");
     CHECK_THROW_POSIX(read != 0, "Connection is closed");
     CHECK_THROW_POSIX(num_recvd == size, "timeout while receiving data");
 }
