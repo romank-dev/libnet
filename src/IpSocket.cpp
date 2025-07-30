@@ -46,10 +46,9 @@ IpSocket::IpSocket(Protocol protocol, IpSocketAddress local_address, bool reuse_
     bind_to_port(local_address.port());
 }
 
-
-void IpSocket::bind_to_address(const sockaddr_in& addr)
+void IpSocket::bind_to_address(IpSocketAddress addr)
 {
-    CHECK_THROW_POSIX(::bind(_sockfd, (struct sockaddr*)&addr, sizeof(struct sockaddr_in)) != -1, "bind() failed!");
+    CHECK_THROW_POSIX(::bind(_sockfd, (struct sockaddr*)&(addr.operator sockaddr_in &()), sizeof(struct sockaddr_in)) != -1, "bind() failed!");
 }
 
 void IpSocket::bind_to_port(uint16_t port)
@@ -61,22 +60,17 @@ void IpSocket::bind_to_port(uint16_t port)
     bind_to_address(addr);
 }
 
-struct sockaddr_in IpSocket::addr_from_string(const string& ip, uint16_t port)
-{
-    struct sockaddr_in addr {};
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(port);
-    CHECK_THROW(inet_aton(ip.c_str(), &addr.sin_addr) != 0, "invalid ip address given: %s", ip.c_str());
-
-    return addr;
-}
-
 void IpSocket::bind_to_device(const string& iface_name)
 {
     struct ifreq ifr;
     memset(&ifr, 0, sizeof(ifr));
     strncpy(ifr.ifr_name, iface_name.c_str(), sizeof(ifr.ifr_name));
     CHECK_THROW_POSIX(!setsockopt(_sockfd, SOL_SOCKET, SO_BINDTODEVICE, (void *)&ifr, sizeof(ifr)), "failed to bind socket to interface %s", iface_name.c_str());
+}
+
+IpSocket::Protocol IpSocket::protocol() const
+{
+    return _protocol;
 }
 
 

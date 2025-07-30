@@ -22,7 +22,7 @@ TEST(LibNet, TestUdpSocket)
     static constexpr int num_clients = 13;
     Thread server_thread([](Thread& thread)
     {
-        UdpSocket server(IpSocketAddress(IpAddress::LocalHost, 12345), false);
+        UdpSocket server(IpSocketAddress(IpAddress::LocalHost, 12141), false);
         server.set_receive_timeout(1000);
         server.set_send_timeout(1000);
         for(int i = 0; i < num_clients; i++)
@@ -39,7 +39,7 @@ TEST(LibNet, TestUdpSocket)
     for(int i = 0; i < num_clients; i++)
     {
         UdpSocket client;
-        client.send("Hello", 5, IpSocketAddress(IpAddress::LocalHost, 12345));
+        client.send("Hello", 5, IpSocketAddress(IpAddress::LocalHost, 12141));
         client.set_receive_timeout(1000);
         client.set_send_timeout(1000);
         char data[5];

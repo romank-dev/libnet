@@ -19,13 +19,30 @@ limitations under the License.
 #include <libnet/Socket.hpp>
 #include <libnet/IpSocketAddress.hpp>
 
+/**
+ * @class IpSocket
+ * @brief Represents an IPv4 socket.
+ *
+ * The `IpSocket` class provides common functionality for IPv4 sockets (e.g. bind)
+ * and is the base class of TcpSocket and UdpSocket.
+ */
 class IpSocket : public Socket
 {
     public:
 
+        /**
+         * @brief Shared pointer type alias for `IpSocket`.
+         */
         using sptr = std::shared_ptr<IpSocket>;
+        /**
+         * @brief Unique pointer type alias for `IpSocket`.
+         */
         using uptr = std::unique_ptr<IpSocket>;
 
+        /**
+         * @enum Protocol
+         * @brief Enum representing the supported socket protocols.
+         */
         enum class Protocol
         {
             TCP,
@@ -34,13 +51,34 @@ class IpSocket : public Socket
 
     public:
 
-		void bind_to_address(const sockaddr_in& addr);
+        /**
+         * @brief Binds the socket to a specific address and port.
+         *
+         * @param addr The `sockaddr_in` structure representing the address to bind to.
+         */
+		void bind_to_address(IpSocketAddress addr);
+
+		 /**
+         * @brief Binds the socket to a specific port.
+         *        The address used is 0.0.0.0
+         *
+         * @param port The port number to bind the socket to.
+         */
 		void bind_to_port(uint16_t port);
+
+		/**
+         * @brief Binds the socket to a specific network device.
+         *
+         * @param iface_name The name of the network interface to bind to.
+         */
 		void bind_to_device(const std::string& iface_name);
 
+		 /**
+         * @brief Retrieves the protocol type of the socket.
+         *
+         * @return The protocol type (`Protocol::TCP` or `Protocol::UDP`).
+         */
 		Protocol protocol() const;
-
-		static struct sockaddr_in addr_from_string(const std::string& ip, uint16_t port);
 
     protected:
         explicit IpSocket(Protocol sock_type);

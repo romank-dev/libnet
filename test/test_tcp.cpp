@@ -35,7 +35,7 @@ TEST(LibNet, TestClientServer)
     });
 
     this_thread::sleep_for(chrono::milliseconds(100)); // let server start listening
-    TcpSocket client(TcpSocket::addr_from_string(IpAddress::LocalHost, 12345), 1000);
+    TcpSocket client(IpSocketAddress(IpAddress::LocalHost, 12345), 1000);
     client.set_receive_timeout(1000);
     client.set_send_timeout(1000);
     size_t recvd, sent;
@@ -50,7 +50,7 @@ TEST(LibNet, TestClientServerNoClientNoServer)
     Stopwatch sw;
     EXPECT_THROW(TcpSocket server(IpSocketAddress(IpAddress::LocalHost, 12345), 100, false);, Exception);
     EXPECT_GE(sw.get_ms(), 100);
-    EXPECT_THROW(TcpSocket client(TcpSocket::addr_from_string(IpAddress::LocalHost, 12345), 100), Exception);
+    EXPECT_THROW(TcpSocket client(IpSocketAddress(IpAddress::LocalHost, 12345), 100), Exception);
     EXPECT_LE(sw.get_ms(), 150); // shouldn't hang
 }
 
