@@ -39,8 +39,9 @@ class IpSocketAddress final
          */
         IpSocketAddress(sockaddr_in addr);
 
-        /** @brief Default constructor for `IpSocketAddress`.
-         *         Will be initialized to 0.0.0.0:0
+        /**
+         * @brief Default constructor for `IpSocketAddress`.
+         *        Will be initialized to 0.0.0.0:0
          */
         IpSocketAddress();
 

@@ -17,7 +17,20 @@ PROJECT = $(shell basename $(CURDIR))
 SRC_DIR = src
 TEST_DIR = test
 
-SRC_LIB = src/Detector.cpp src/UdpSocket.cpp src/TcpSocket.cpp src/IpSocket.cpp src/Socket.cpp src/TcpServerSocket.cpp src/IpAddress.cpp src/IpSocketAddress.cpp 
+SRC_LIB = src/Detector.cpp \
+		  src/UdpSocket.cpp \
+		  src/TcpSocket.cpp \
+		  src/IpSocket.cpp \
+		  src/Socket.cpp \
+		  src/TcpServerSocket.cpp \
+		  src/IpAddress.cpp \
+		  src/IpSocketAddress.cpp \
+		  src/UnixSocketAddress.cpp \
+		  src/UnixSocket.cpp \
+		  src/UnixServerSocket.cpp \
+		  src/UnixStreamSocket.cpp \
+		  src/UnixDatagramSocket.cpp 
+		  
 SRC_DETECTOR = src/detector.cpp 
 SRC_TEST = $(wildcard test/*.cpp)
 

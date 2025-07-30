@@ -15,9 +15,17 @@ limitations under the License.
 
 #pragma once
 
+/**
+ * This file includes all the headers from libnet library.
+ * Very convenient for including all the headers in one #include directive.
+ */
+
 #include <libnet/TcpServerSocket.hpp>
 #include <libnet/UdpSocket.hpp>
 #include <libnet/IpSocket.hpp>
+#include <libnet/UnixSocket.hpp>
+#include <libnet/UnixStreamSocket.hpp>
+#include <libnet/UnixDatagramSocket.hpp>
 #include <libnet/TcpSocket.hpp>
 #include <libnet/IpAddress.hpp>
 #include <libnet/IpSocketAddress.hpp>

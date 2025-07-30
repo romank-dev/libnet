@@ -17,35 +17,36 @@ limitations under the License.
 #include "gtest/gtest.h"
 using namespace std;
 
-TEST(LibNet, TestUdpSocket)
+TEST(LibNet, TestUnixDatagranSocket)
 {
     static constexpr int num_clients = 13;
-    Thread server_thread([](Thread& thread)
+    const auto addr = UnixSocketAddress("test_unix_dgram", false);
+    Thread server_thread([addr](Thread& thread)
     {
-        UdpSocket server(IpSocketAddress(IpAddress::LocalHost, 12141), false);
+        UnixDatagramSocket server(addr);
         server.set_receive_timeout(1000);
         server.set_send_timeout(1000);
         for(int i = 0; i < num_clients; i++)
         {
             char data[5] {};
             uint16_t pkt_size;
-            IpSocketAddress client;
+            UnixSocketAddress client;
             EXPECT_TRUE(server.receive(data, sizeof(data), pkt_size, client));
             EXPECT_EQ(string(data, 5), "Hello");
             server.send(data, sizeof(data), client);
         }
     });
-    this_thread::sleep_for(chrono::milliseconds(100));
+    this_thread::sleep_for(chrono::milliseconds(100)); // let server start listening
     for(int i = 0; i < num_clients; i++)
     {
-        UdpSocket client;
-        client.send("Hello", 5, IpSocketAddress(IpAddress::LocalHost, 12141));
+        UnixDatagramSocket client(UnixSocketAddress::make_temp_filesystem_path());
+        client.send("Hello", 5, addr);
         client.set_receive_timeout(1000);
         client.set_send_timeout(1000);
         char data[5];
         uint16_t pkt_size;
-        IpSocketAddress server;
+        UnixSocketAddress server;
         EXPECT_TRUE(client.receive(data, sizeof(data), pkt_size, server));
-        EXPECT_EQ(string(data, 5), "Hello");
+        EXPECT_TRUE(memcmp(&addr, &server, sizeof(addr)) == 0);
     }
 }

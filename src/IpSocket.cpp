@@ -24,12 +24,12 @@ using namespace std;
 
 IpSocket::IpSocket(Protocol protocol) :
     Socket(SockType::IPv4, Handle(socket(AF_INET, protocol == Protocol::TCP ? SOCK_STREAM : SOCK_DGRAM, 0), "Failed to create socket")),
-    _protocol(protocol)
+    _protocol(protocol), _owns_address(false)
 {}
 
 IpSocket::IpSocket(Protocol sock_type, Handle&& sock_fd) :
     Socket(SockType::IPv4, move(sock_fd)),
-    _protocol(sock_type)
+    _protocol(sock_type), _owns_address(false)
 {
     CHECK_THROW_POSIX(_sockfd != -1, "Invalid socket!");
 }
@@ -46,10 +46,9 @@ IpSocket::IpSocket(Protocol protocol, IpSocketAddress local_address, bool reuse_
     bind_to_port(local_address.port());
 }
 
-
-void IpSocket::bind_to_address(const sockaddr_in& addr)
+void IpSocket::bind_to_address(IpSocketAddress addr)
 {
-    CHECK_THROW_POSIX(::bind(_sockfd, (struct sockaddr*)&addr, sizeof(struct sockaddr_in)) != -1, "bind() failed!");
+    CHECK_THROW_POSIX(::bind(_sockfd, (struct sockaddr*)&(addr.operator sockaddr_in &()), sizeof(struct sockaddr_in)) != -1, "bind() failed!");
 }
 
 void IpSocket::bind_to_port(uint16_t port)
@@ -61,16 +60,6 @@ void IpSocket::bind_to_port(uint16_t port)
     bind_to_address(addr);
 }
 
-struct sockaddr_in IpSocket::addr_from_string(const string& ip, uint16_t port)
-{
-    struct sockaddr_in addr {};
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(port);
-    CHECK_THROW(inet_aton(ip.c_str(), &addr.sin_addr) != 0, "invalid ip address given: %s", ip.c_str());
-
-    return addr;
-}
-
 void IpSocket::bind_to_device(const string& iface_name)
 {
     struct ifreq ifr;
@@ -79,7 +68,15 @@ void IpSocket::bind_to_device(const string& iface_name)
     CHECK_THROW_POSIX(!setsockopt(_sockfd, SOL_SOCKET, SO_BINDTODEVICE, (void *)&ifr, sizeof(ifr)), "failed to bind socket to interface %s", iface_name.c_str());
 }
 
+IpSocket::Protocol IpSocket::protocol() const
+{
+    return _protocol;
+}
 
+bool IpSocket::owns_address() const
+{
+    return _owns_address;
+}
 
 
 

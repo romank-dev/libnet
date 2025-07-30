@@ -24,7 +24,9 @@ IpSocketAddress::IpSocketAddress(sockaddr_in addr) : _addr(addr)
 {}
 
 IpSocketAddress::IpSocketAddress() : _addr({})
-{}
+{
+    _addr.sin_family = AF_INET;
+}
 
 sockaddr_in IpSocketAddress::make_addr(IpAddress address, uint16_t port)
 {
