@@ -33,7 +33,7 @@ TEST(LibNet, TestUnixStreamSocket)
     });
 
     this_thread::sleep_for(chrono::milliseconds(100)); // let server start listening
-    UnixStreamSocket client(UnixStreamSocket::ClientMode{}, UnixSocketAddress("server_path", false), 1000);
+    UnixStreamSocket client(UnixStreamSocket::ClientMode{}, UnixSocketAddress("server_path", false));
     client.set_receive_timeout(1000);
     client.set_send_timeout(1000);
     size_t recvd, sent;
@@ -59,7 +59,7 @@ TEST(LibNet, TestUnixStreamSocketFilePath)
     });
 
     this_thread::sleep_for(chrono::milliseconds(100)); // let server start listening
-    UnixStreamSocket client(UnixStreamSocket::ClientMode{}, UnixSocketAddress("/tmp/server_path", true), 1000);
+    UnixStreamSocket client(UnixStreamSocket::ClientMode{}, UnixSocketAddress("/tmp/server_path", true));
     client.set_receive_timeout(1000);
     client.set_send_timeout(1000);
     size_t recvd, sent;
@@ -93,7 +93,7 @@ TEST(LibNet, TestUnixStreamServer)
     this_thread::sleep_for(chrono::milliseconds(50)); // let server start listening
     for(int i = 0; i < num_clients; i++)
     {
-        UnixStreamSocket client(UnixStreamSocket::ClientMode{}, addr, 100);
+        UnixStreamSocket client(UnixStreamSocket::ClientMode{}, addr);
         char hello[5];
         size_t n;
         EXPECT_TRUE(client.receive(hello, 5, n));
