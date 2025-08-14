@@ -45,7 +45,7 @@ class UnixStreamSocket final : public UnixSocket
         class ClientMode {};
         class ServerMode {};
 
-        UnixStreamSocket(ClientMode, UnixSocketAddress address, uint32_t timeout_ms);
+        UnixStreamSocket(ClientMode, UnixSocketAddress address);
         UnixStreamSocket(ServerMode, UnixSocketAddress address, uint32_t timeout_ms);
 
         /**

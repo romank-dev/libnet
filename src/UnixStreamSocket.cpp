@@ -37,7 +37,7 @@ UnixStreamSocket::UnixStreamSocket(ServerMode, UnixSocketAddress address, uint32
     _sockfd = Handle(client_sock_fd, "Invalid client socket");
 }
 
-UnixStreamSocket::UnixStreamSocket(ClientMode, UnixSocketAddress address, uint32_t timeout) :
+UnixStreamSocket::UnixStreamSocket(ClientMode, UnixSocketAddress address) :
     UnixSocket(Protocol::STREAM)
 {
     int connect_res = connect(_sockfd, (struct sockaddr*)&(const sockaddr_un&)address, address.true_size());
