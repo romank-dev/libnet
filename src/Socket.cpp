@@ -22,12 +22,26 @@ limitations under the License.
 
 using namespace std;
 
-Socket::Socket(SockType type, Handle&& sockfd) : _sockfd(move(sockfd)), _type(type)
+Socket::Socket(SockType type, Handle&& sockfd) :
+        _sockfd(move(sockfd)),
+        _type(type),
+        _read_waitable(pollfd { _sockfd, POLLIN, 0 }),
+        _write_waitable(pollfd { _sockfd, POLLOUT, 0 })
 {}
 
 Socket::SockType Socket::type() const
 {
     return _type;
+}
+
+Waitable& Socket::get_read_waitable()
+{
+    return _read_waitable;
+}
+
+Waitable& Socket::get_write_waitable()
+{
+    return _write_waitable;
 }
 
 void Socket::set_sock_opt(int level, int optname, void* optval, socklen_t optlen)

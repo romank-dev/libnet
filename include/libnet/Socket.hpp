@@ -99,6 +99,17 @@ class Socket : NonCopyable
          */
         void get_sock_opt(int level, int optname, void* optval, socklen_t& optlen);
 
+        /**
+         * @brief Retrieves the Waitable object to wait for readability of the socket.
+         * @return Reference to the `Waitable` object for read operations.
+         */
+        Waitable& get_read_waitable();
+
+        /**
+         * @brief Retrieves the Waitable object to wait for writability of the socket.
+         * @return Reference to the `Waitable` object for write operations.
+         */
+        Waitable& get_write_waitable();
 
     protected:
         explicit Socket(SockType type, Handle&& sockfd);
@@ -106,6 +117,8 @@ class Socket : NonCopyable
     protected:
         Handle              _sockfd;
         const SockType      _type;
+        Waitable            _read_waitable;
+        Waitable            _write_waitable;
 };
 
 
