@@ -34,12 +34,12 @@ Socket::SockType Socket::type() const
     return _type;
 }
 
-Waitable& Socket::get_read_waitable()
+AbstractWaitable& Socket::get_read_waitable()
 {
     return _read_waitable;
 }
 
-Waitable& Socket::get_write_waitable()
+AbstractWaitable& Socket::get_write_waitable()
 {
     return _write_waitable;
 }

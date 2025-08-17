@@ -103,13 +103,13 @@ class Socket : NonCopyable
          * @brief Retrieves the Waitable object to wait for readability of the socket.
          * @return Reference to the `Waitable` object for read operations.
          */
-        Waitable& get_read_waitable();
+        AbstractWaitable& get_read_waitable();
 
         /**
          * @brief Retrieves the Waitable object to wait for writability of the socket.
          * @return Reference to the `Waitable` object for write operations.
          */
-        Waitable& get_write_waitable();
+        AbstractWaitable& get_write_waitable();
 
     protected:
         explicit Socket(SockType type, Handle&& sockfd);
