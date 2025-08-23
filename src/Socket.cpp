@@ -19,6 +19,7 @@ limitations under the License.
 #include <sys/socket.h>
 #include <net/if.h>
 #include <libnet/Socket.hpp>
+#include "logging.hpp"
 
 using namespace std;
 

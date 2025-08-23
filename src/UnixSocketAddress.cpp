@@ -28,6 +28,7 @@ UnixSocketAddress::UnixSocketAddress(const std::string& name, bool filesystem) :
 sockaddr_un UnixSocketAddress::make_addr(const std::string& name, bool filesystem)
 {
     CHECK_THROW(!name.empty(), "Socket path cannot be empty");
+    CHECK_THROW(name.length() < sizeof(sockaddr_un::sun_path) - 1 - int(filesystem), "Socket address name is too long")
     struct sockaddr_un addr {};
     addr.sun_family = AF_UNIX;
     // anonymous addresses not backed by a file will have '\0' as it's first letter.
@@ -47,7 +48,7 @@ UnixSocketAddress UnixSocketAddress::make_temp_filesystem_path(const std::string
 
 UnixSocketAddress::operator std::string() const
 {
-    return _addr.sun_path;
+    return is_filesystem() ? _addr.sun_path : _addr.sun_path+1;
 }
 
 UnixSocketAddress::operator const sockaddr_un&() const

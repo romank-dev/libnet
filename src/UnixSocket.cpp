@@ -16,7 +16,7 @@ limitations under the License.
 #include <sys/socket.h>
 
 #include <libnet/UnixSocket.hpp>
-
+#include "logging.hpp"
 using namespace std;
 
 UnixSocket::UnixSocket(Protocol protocol) :
@@ -50,7 +50,7 @@ UnixSocket::~UnixSocket()
             getsockname(_sockfd, (sockaddr*)&addr, &len);
             if(addr.is_filesystem())
             {
-                CHECK_THROW_POSIX(!::unlink(string(addr).c_str()), "Failed to unlink socket file %s", string(addr).c_str());
+                CHECK_THROW_POSIX(!::unlink(string(addr).c_str()), "Failed to unlink socket file [%s]", string(addr).c_str());
             }
         }
     );
@@ -63,6 +63,7 @@ bool UnixSocket::owns_address() const
 
 void UnixSocket::bind_to_path(UnixSocketAddress addr)
 {
+    TRACE_DBG("Binding UNIX socket fd: %d to path: [%s]", int(_sockfd), string(addr).c_str());
     CHECK_THROW_POSIX(!::bind(_sockfd, (struct sockaddr*)&addr, addr.true_size()), "bind() failed");
     _owns_address = true;
 }

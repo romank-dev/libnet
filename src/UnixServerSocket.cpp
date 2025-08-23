@@ -17,12 +17,14 @@ limitations under the License.
 #include <libnet/UnixSocket.hpp>
 #include <libnet/UnixServerSocket.hpp>
 #include <memory>
+#include "logging.hpp"
 
 using namespace std;
 
 UnixServerSocket::UnixServerSocket(UnixSocketAddress bind_addr) :
         UnixSocket(Protocol::STREAM, bind_addr)
 {
+    TRACE_DBG("Created UNIX stream server socket, fd: %d", int(_sockfd));
     CHECK_THROW_POSIX(listen(_sockfd, 1) != -1, "listen() failed!");
 }
 

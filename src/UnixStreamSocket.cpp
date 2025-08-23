@@ -19,13 +19,14 @@ limitations under the License.
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <libnet/UnixStreamSocket.hpp>
-
+#include "logging.hpp"
 
 using namespace std;
 
 UnixStreamSocket::UnixStreamSocket(ServerMode, UnixSocketAddress address, uint32_t timeout_ms) :
     UnixSocket(Protocol::STREAM, address)
 {
+    TRACE_DBG("Created listening UNIX stream socket, fd: %d, on path: [%s]", int(_sockfd), string(address).c_str());
     CHECK_THROW_POSIX(listen(_sockfd, 1) != -1, "listen() failed!");
 
     struct sockaddr_in client_addr{};
@@ -34,19 +35,24 @@ UnixStreamSocket::UnixStreamSocket(ServerMode, UnixSocketAddress address, uint32
     CHECK_THROW(Utils::OS::wait_for_read_fd(_sockfd, timeout_ms), "Failed to accept a connection on time");
     CHECK_THROW_POSIX((client_sock_fd = accept(_sockfd, (struct sockaddr*)&client_addr, &client_addr_len)) != -1, "accept() failed!");
 
+    TRACE_DBG("Listening Unix stream socket fd: %d accepted a client fd: %d", int(_sockfd), client_sock_fd);
     _sockfd = Handle(client_sock_fd, "Invalid client socket");
 }
 
 UnixStreamSocket::UnixStreamSocket(ClientMode, UnixSocketAddress address) :
     UnixSocket(Protocol::STREAM)
 {
+    TRACE_DBG("Created client UNIX stream socket, fd: %d", int(_sockfd));
     int connect_res = connect(_sockfd, (struct sockaddr*)&(const sockaddr_un&)address, address.true_size());
-    CHECK_THROW_POSIX(connect_res == 0, "Failed to connect to %s", string(address).c_str());
+    CHECK_THROW_POSIX(connect_res == 0, "Failed to connect to [%s]", string(address).c_str());
+    TRACE_DBG("Client UNIX stream socket (fd %d) connected to [%s]", int(_sockfd), string(address).c_str());
 }
 
 UnixStreamSocket::UnixStreamSocket(Handle&& sockfd) :
     UnixSocket(Protocol::STREAM, move(sockfd))
-{}
+{
+    TRACE_DBG("Created UNIX stream socket from server, fd: %d", int(_sockfd));
+}
 
 UnixStreamSocket::~UnixStreamSocket()
 {

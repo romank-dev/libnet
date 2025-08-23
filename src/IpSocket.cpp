@@ -17,7 +17,7 @@ limitations under the License.
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <net/if.h>
-
+#include "logging.hpp"
 #include <libnet/IpSocket.hpp>
 
 using namespace std;
@@ -48,11 +48,13 @@ IpSocket::IpSocket(Protocol protocol, IpSocketAddress local_address, bool reuse_
 
 void IpSocket::bind_to_address(IpSocketAddress addr)
 {
+    TRACE_DBG("Binding socket fd %d to address %s", int(_sockfd), string(addr).c_str());
     CHECK_THROW_POSIX(::bind(_sockfd, (struct sockaddr*)&(addr.operator sockaddr_in &()), sizeof(struct sockaddr_in)) != -1, "bind() failed!");
 }
 
 void IpSocket::bind_to_port(uint16_t port)
 {
+    TRACE_DBG("Binding socket fd %d to port %d", int(_sockfd), port);
 	struct sockaddr_in addr{};
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
@@ -62,6 +64,7 @@ void IpSocket::bind_to_port(uint16_t port)
 
 void IpSocket::bind_to_device(const string& iface_name)
 {
+    TRACE_DBG("Binding socket fd %d to device %s", int(_sockfd), iface_name.c_str());
     struct ifreq ifr;
     memset(&ifr, 0, sizeof(ifr));
     strncpy(ifr.ifr_name, iface_name.c_str(), sizeof(ifr.ifr_name));
