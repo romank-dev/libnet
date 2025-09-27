@@ -36,7 +36,7 @@ class UnixSocketAddress final
         /**
          * @brief Default constructor for `UnixSocketAddress`.
          *
-         * Initializes an empty Unix socket address.
+         * Initializes an empty Unix abstract socket address.
          */
         UnixSocketAddress();
 
@@ -44,7 +44,7 @@ class UnixSocketAddress final
          * @brief Constructor for `UnixSocketAddress` with a given name and filesystem flag.
          *
          * @param name The name of the Unix socket address.
-         * @param filesystem If true, the address is treated as a filesystem path.
+         * @param filesystem If true, the address is treated as a filesystem path. Otherwise, it addresses an abstract socket.
          */
         UnixSocketAddress(const std::string& name, bool filesystem);
 

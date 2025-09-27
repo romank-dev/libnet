@@ -63,7 +63,7 @@ UnixSocketAddress::operator sockaddr_un&()
 
 size_t UnixSocketAddress::true_size() const
 {
-    return sizeof(_addr.sun_family) + strlen(_addr.sun_path+1) + 1;
+    return offsetof(struct sockaddr_un, sun_path) + strlen(_addr.sun_path+1) + 1;
 }
 
 bool UnixSocketAddress::is_filesystem() const
