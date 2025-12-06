@@ -31,7 +31,7 @@ class UnixSocketAddress final
          * @param name The base name for the Unix socket address.
          * @return A UnixSocketAddress object with a unique temporary path.
          */
-        static UnixSocketAddress make_temp_filesystem_path(const std::string& name = "/tmp/unix_XXXXXX");
+        static UnixSocketAddress make_temp_filesystem_path(const std::string& name);
 
         /**
          * @brief Default constructor for `UnixSocketAddress`.

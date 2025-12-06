@@ -39,7 +39,7 @@ TEST(LibNet, TestUnixDatagranSocket)
     this_thread::sleep_for(chrono::milliseconds(100)); // let server start listening
     for(int i = 0; i < num_clients; i++)
     {
-        UnixDatagramSocket client(UnixSocketAddress::make_temp_filesystem_path());
+        UnixDatagramSocket client(UnixSocketAddress::make_temp_filesystem_path("test_unix__"));
         client.send("Hello", 5, addr);
         client.set_receive_timeout(1000);
         client.set_send_timeout(1000);
