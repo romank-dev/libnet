@@ -44,14 +44,14 @@ class TcpServerSocket final : public IpSocket
 		TcpServerSocket(IpSocketAddress bind_address, bool reuse_addr);
 
 		 /**
-         * @brief Accepts an incoming connection.
+         * @brief Blocks and accepts an incoming connection.
          * @return A unique pointer to a `TcpSocket` object representing the accepted connection.
          * @throws PosixException on errors during the accept operation.
          */
 		std::unique_ptr<TcpSocket> accept_connection();
 
 		/**
-         * @brief Accepts an incoming connection with a specified timeout.
+         * @brief Blocks and accepts an incoming connection with a specified timeout.
          * @param timeout_ms Timeout in milliseconds to wait for a connection.
          * @return A unique pointer to a `TcpSocket` object representing the accepted connection, or null if timed out.
          * @throws PosixException on errors during the accept operation or timeout.

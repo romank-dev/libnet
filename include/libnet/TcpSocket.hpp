@@ -29,7 +29,7 @@ limitations under the License.
  * @brief A RAII-style TCP connected socket implementation.
  *
  * The TcpSocket connects or accepts a connection during construction, behaving as a connected socket
- * during it's lifetime. The underlying socket is blocking.
+ * during its lifetime. The underlying socket is blocking. See \ref Socket for timeout configuration.
  */
 class TcpSocket final : public IpSocket
 {

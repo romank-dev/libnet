@@ -29,7 +29,7 @@ limitations under the License.
  * @brief A class representing a Unix Datagram Socket.
  *
  * This class provides functionality for sending and receiving datagram messages
- * over Unix domain sockets.
+ * over Unix domain sockets. The underlying socket is blocking. See \ref Socket for timeout configuration.
  */
 class UnixDatagramSocket final : public UnixSocket
 {

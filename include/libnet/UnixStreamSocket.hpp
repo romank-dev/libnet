@@ -27,6 +27,7 @@ limitations under the License.
 /**
  * @class UnixStreamSocket
  * @brief A class representing a Unix stream socket.
+ * The underlying socket is blocking. See \ref Socket for timeout configuration.
  */
 class UnixStreamSocket final : public UnixSocket
 {

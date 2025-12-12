@@ -30,6 +30,7 @@ limitations under the License.
  *
  * The `UdpSocket` class provides functionality for sending and receiving UDP packets.
  * It is derived from the `IpSocket` class and offers additional methods specific to UDP communication.
+ * The underlying socket is blocking. See \ref Socket for timeout configuration.
  */
 class UdpSocket final : public IpSocket
 {
