@@ -111,6 +111,13 @@ class Socket : NonCopyable
          */
         AbstractWaitable& get_write_waitable();
 
+        /**
+         * @brief Performs an ioctl operation on the socket.
+         * @param request The ioctl request code.
+         * @param argp Pointer to the argument for the ioctl operation.
+         */
+        void ioctl(int request, void* argp);
+
     protected:
         explicit Socket(SockType type, Handle&& sockfd);
 

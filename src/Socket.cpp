@@ -19,6 +19,7 @@ limitations under the License.
 #include <sys/socket.h>
 #include <net/if.h>
 #include <libnet/Socket.hpp>
+#include <sys/ioctl.h>
 #include "logging.hpp"
 
 using namespace std;
@@ -69,5 +70,10 @@ void Socket::set_send_timeout(uint32_t ms)
     t.tv_sec = ms / 1000;
     t.tv_usec = (ms * 1000) % 1000000;
     CHECK_THROW_POSIX(setsockopt(_sockfd, SOL_SOCKET, SO_SNDTIMEO, (char *)&t, sizeof(t)) == 0, "setsockopt() failed");
+}
+
+void Socket::ioctl(int request, void* argp)
+{
+    CHECK_THROW_POSIX(::ioctl(_sockfd, request, argp) != -1, "ioctl() failed, request 0x%x", request);
 }
 
